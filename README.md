@@ -48,6 +48,17 @@ infra           Dockerfiles, docker-compose, nginx, coturn
 docs            ARCHITECTURE, PLAN, SETUP, DEPLOYMENT, PROTOCOL, SAFETY, EXTERNAL-SERVICES
 ```
 
+## Live
+
+| What | URL |
+|---|---|
+| Full app on Render (site + API + WebSocket) | https://stranger-3ak5.onrender.com |
+| SEO landing on GitHub Pages (chat connects to the Render backend) | https://sabhckr.github.io/stranger/ |
+| Source | https://github.com/sabhckr/stranger |
+
+Render's free tier sleeps after 15 minutes without traffic (first request then takes up to a minute) and its free
+Postgres expires 30 days after creation; see docs/DEPLOYMENT.md before relying on it.
+
 ## Hosting
 
 - **GitHub Pages** (static landing + client): `.github/workflows/pages.yml`, published on every push to `main`.
