@@ -1,0 +1,37 @@
+{
+  "name": "stranger",
+  "private": true,
+  "version": "0.1.0",
+  "description": "STRANGER — anonymous 1-to-1 text and video chat with safety-first matchmaking",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "e2e"
+  ],
+  "scripts": {
+    "build:protocol": "npm run build -w packages/protocol",
+    "build": "npm run build:protocol && npm run build -w apps/server && npm run build -w apps/web",
+    "dev": "npm run build:protocol && npm run dev -w apps/server & npm run dev -w apps/web & wait",
+    "dev:server": "npm run build:protocol && npm run dev -w apps/server",
+    "dev:web": "npm run dev -w apps/web",
+    "typecheck": "npm run build:protocol && tsc -p apps/server/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit && tsc -p e2e/tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run build:protocol && npm run test -w packages/protocol -w apps/server -w apps/web",
+    "test:e2e": "npm run test -w e2e",
+    "db:migrate": "npm run db:migrate -w apps/server",
+    "db:create": "npm run db:create -w apps/server"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.0",
+    "typescript-eslint": "^8.71.2"
+  }
+}

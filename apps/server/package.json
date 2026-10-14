@@ -1,0 +1,35 @@
+{
+  "name": "@stranger/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:create": "tsx src/db/create-database.ts",
+    "db:migrate": "tsx src/db/migrate.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.1",
+    "@fastify/helmet": "^13.2.0",
+    "@fastify/rate-limit": "^11.2.1",
+    "@stranger/protocol": "*",
+    "fastify": "^5.12.7",
+    "ioredis": "^5.11.1",
+    "pg": "^8.23.1",
+    "pino": "^10.4.0",
+    "ws": "^8.22.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "@types/ws": "^8.18.2",
+    "pino-pretty": "^13.0.0",
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.4"
+  }
+}
