@@ -37,6 +37,16 @@ export interface App {
 export async function buildApp(config: Config, log: Logger): Promise<App> {
   const redis = createRedis(config.REDIS_URL, `${config.NODE_ID}:main`);
   const sub = createRedis(config.REDIS_URL, `${config.NODE_ID}:sub`);
+  // ioredis reconnects on its own; log outages instead of printing "Unhandled error event".
+  for (const [name, client] of [
+    ['redis', redis],
+    ['redis-sub', sub],
+  ] as const) {
+    client.on('error', (err: Error) =>
+      log.warn({ err: err.message, client: name }, 'redis connection error'),
+    );
+    client.on('reconnecting', () => log.info({ client: name }, 'redis reconnecting'));
+  }
   const pool = createPool(config.DATABASE_URL);
 
   const matchmaker = new Matchmaker(redis, {

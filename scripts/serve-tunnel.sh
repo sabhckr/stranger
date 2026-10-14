@@ -17,7 +17,10 @@ fi
 
 cloudflared tunnel --url "http://127.0.0.1:${PORT}" --no-autoupdate >"$LOG" 2>&1 &
 TUNNEL_PID=$!
-cleanup() { kill "$TUNNEL_PID" 2>/dev/null || true; }
+cleanup() {
+  kill "$TUNNEL_PID" 2>/dev/null || true
+  rm -f ".tunnel-url"
+}
 trap cleanup EXIT INT TERM
 
 echo "Starting Cloudflare quick tunnel..."
@@ -32,6 +35,7 @@ if [ -z "$URL" ]; then
   exit 1
 fi
 
+printf '%s\n' "$URL" >".tunnel-url"
 echo "Building the web app for $URL ..."
 npm run build:protocol >/dev/null
 VITE_SITE_URL="$URL" npm run build -w apps/web >/dev/null

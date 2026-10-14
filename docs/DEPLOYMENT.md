@@ -26,6 +26,16 @@ tunnel's HTTPS URL and serves site + API + WebSocket from the local server on on
 changes on every run, is rate-limited by Cloudflare and is meant for testing with friends or from
 phones, not for production. Camera access works because the URL is HTTPS. Stop with Ctrl-C.
 
+### Keeping the test site up (macOS)
+
+`npm run tunnel:install` installs a per-user LaunchAgent (`com.stranger.tunnel`) that runs the tunnel at
+login, restarts it if it exits and keeps the Mac from idle-sleeping while it runs. The current URL is in
+`.tunnel-url` (`npm run tunnel:url`); it changes after every restart. Logs: `~/Library/Logs/stranger-tunnel.log`.
+Remove with `npm run tunnel:uninstall`. Redis and Postgres should run as Homebrew services
+(`brew services start redis postgresql@17`) so they come back after a reboot. A closed lid still sleeps the
+Mac unless it is on power with an external display; for a permanent address use a named Cloudflare tunnel on
+your own domain or the Render deployment above.
+
 ## SEO
 
 - `index.html` carries the title/description targeting "stranger chat", "stranger talk", "talk to strangers",

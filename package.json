@@ -26,7 +26,10 @@
     "test:e2e": "npm run test -w e2e",
     "db:migrate": "npm run db:migrate -w apps/server",
     "db:create": "npm run db:create -w apps/server",
-    "tunnel": "bash scripts/serve-tunnel.sh"
+    "tunnel": "bash scripts/serve-tunnel.sh",
+    "tunnel:url": "bash scripts/tunnel-url.sh",
+    "tunnel:install": "bash scripts/install-launchagent.sh",
+    "tunnel:uninstall": "bash scripts/install-launchagent.sh --uninstall"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
