@@ -1,7 +1,7 @@
 import { expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
 
 export const ADMIN = 'e2e-admin-token';
-export const API = 'http://localhost:8080';
+export const API = `http://localhost:${process.env.E2E_API_PORT ?? '8080'}`;
 
 export async function openUser(browser: Browser): Promise<{ context: BrowserContext; page: Page }> {
   const context = await browser.newContext();

@@ -48,7 +48,8 @@ npm test                 # vitest: packages/protocol, apps/server (real Redis db
 npm run test:e2e         # Playwright: boots server (Postgres stranger_e2e, Redis db 2) + Vite, drives two Chrome contexts
 ```
 
-Override test infrastructure with `TEST_DATABASE_URL`, `TEST_REDIS_URL`, `E2E_DATABASE_URL`, `E2E_REDIS_URL`.
+Override test infrastructure with `TEST_DATABASE_URL`, `TEST_REDIS_URL`, `E2E_DATABASE_URL`, `E2E_REDIS_URL`; set
+`E2E_API_PORT` (default 8080) when that port is already taken, for example by `npm run tunnel`.
 Test databases are created automatically; their tables are truncated between tests. Do not point them at production.
 
 ## Environment reference

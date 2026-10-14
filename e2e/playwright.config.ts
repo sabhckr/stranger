@@ -7,6 +7,8 @@ import { defineConfig, devices } from '@playwright/test';
 const E2E_DB = process.env.E2E_DATABASE_URL ?? 'postgres://localhost:5432/stranger_e2e';
 const E2E_REDIS = process.env.E2E_REDIS_URL ?? 'redis://127.0.0.1:6379/2';
 export const E2E_ADMIN_TOKEN = 'e2e-admin-token';
+/** API port for the e2e server; override when 8080 is taken (e.g. by `npm run tunnel`). */
+const API_PORT = process.env.E2E_API_PORT ?? '8080';
 
 export default defineConfig({
   testDir: './tests',
@@ -39,12 +41,12 @@ export default defineConfig({
     {
       command: 'npm run build:protocol && npm run start:e2e -w apps/server',
       cwd: '..',
-      url: 'http://localhost:8080/healthz',
+      url: `http://localhost:${API_PORT}/healthz`,
       reuseExistingServer: false,
       timeout: 120_000,
       env: {
         NODE_ENV: 'test',
-        PORT: '8080',
+        PORT: API_PORT,
         HOST: '127.0.0.1',
         LOG_LEVEL: 'warn',
         PUBLIC_ORIGINS: 'http://localhost:5173,http://127.0.0.1:5173',
@@ -65,6 +67,7 @@ export default defineConfig({
       url: 'http://localhost:5173',
       reuseExistingServer: false,
       timeout: 60_000,
+      env: { VITE_DEV_SERVER_TARGET: `http://localhost:${API_PORT}` },
     },
   ],
 });
