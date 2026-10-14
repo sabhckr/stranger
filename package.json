@@ -2,7 +2,7 @@
   "name": "stranger",
   "private": true,
   "version": "0.1.0",
-  "description": "STRANGER — anonymous 1-to-1 text and video chat with safety-first matchmaking",
+  "description": "STRANGER \u2014 anonymous 1-to-1 text and video chat with safety-first matchmaking",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -25,7 +25,8 @@
     "test": "npm run build:protocol && npm run test -w packages/protocol -w apps/server -w apps/web",
     "test:e2e": "npm run test -w e2e",
     "db:migrate": "npm run db:migrate -w apps/server",
-    "db:create": "npm run db:create -w apps/server"
+    "db:create": "npm run db:create -w apps/server",
+    "tunnel": "bash scripts/serve-tunnel.sh"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

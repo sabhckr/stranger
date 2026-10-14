@@ -19,6 +19,13 @@ Notes on free tiers: Render free web services sleep after inactivity (first requ
 Postgres is time-limited; upgrade before launch. Blueprint field names follow Render's current spec but were
 not applied from this machine (no Render account here), so review the first deploy in the Render dashboard.
 
+## Share a test build from your own computer (Cloudflare quick tunnel)
+
+`npm run tunnel` starts a Cloudflare quick tunnel (no account needed), builds the web app for the
+tunnel's HTTPS URL and serves site + API + WebSocket from the local server on one origin. The URL
+changes on every run, is rate-limited by Cloudflare and is meant for testing with friends or from
+phones, not for production. Camera access works because the URL is HTTPS. Stop with Ctrl-C.
+
 ## SEO
 
 - `index.html` carries the title/description targeting "stranger chat", "stranger talk", "talk to strangers",
