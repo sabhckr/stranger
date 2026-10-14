@@ -9,7 +9,7 @@ not reasoned about.
 ## Phase 0 — Repository, tooling, infrastructure contracts
 
 - [x] Inspect the existing repository (none for STRANGER; created fresh, separate from the PMG portal).
-- [x] Verified on 14 Oct 2026: 36 server tests, 5 protocol tests, 13 web tests, 5 Playwright scenarios — all green.
+- [x] Verified on 14 Oct 2026: 41 server tests, 5 protocol tests, 17 web tests, 6 Playwright scenarios — all green locally and in GitHub Actions (https://github.com/sabhckr/stranger/actions).
 - [x] npm-workspaces monorepo: `apps/server`, `apps/web`, `packages/protocol`, `e2e`, `infra`, `docs`.
 - [x] Shared TypeScript config, ESLint + Prettier, `.env.example`, `.nvmrc`, `.editorconfig`.
 - [x] Protocol package: zod schemas for every WebSocket message (client→server and server→client).
@@ -64,7 +64,7 @@ not reasoned about.
 - [x] nginx config: static assets, `/api` and `/ws` proxying, WebSocket upgrade, security headers.
 - [x] GitHub Actions CI: lint, typecheck, unit + integration tests with service containers, build.
 - [x] Docs: SETUP, DEPLOYMENT, ARCHITECTURE, PROTOCOL, SAFETY, EXTERNAL-SERVICES (what is still manual).
-- [~] Verification: production build of both apps and migrations from a clean DB verified locally; Docker images and `compose config` are validated only in CI (no Docker on the dev machine).
+- [x] Verification: production build of both apps and migrations from a clean DB verified locally; both Docker images built and `compose config` validated by CI on GitHub (run 38578211953, 14 Oct 2026). The images have not yet been run as containers.
 
 ## Explicitly out of scope for the MVP (documented, not faked)
 
