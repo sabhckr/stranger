@@ -8,7 +8,8 @@ services:
     runtime: node
     plan: free
     # RENDER_EXTERNAL_URL is available at build time, so the SPA's canonical/OG URLs match the service.
-    buildCommand: npm ci --no-audit --no-fund && VITE_SITE_URL=$RENDER_EXTERNAL_URL npm run build
+    # --include=dev: Render builds with NODE_ENV=production, which would skip the TypeScript/Vite toolchain.
+    buildCommand: npm ci --include=dev --no-audit --no-fund && VITE_SITE_URL=$RENDER_EXTERNAL_URL npm run build
     startCommand: node apps/server/dist/db/migrate.js && node apps/server/dist/index.js
     healthCheckPath: /healthz
     autoDeployTrigger: commit
