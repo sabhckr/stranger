@@ -1,5 +1,6 @@
 import { FAQ } from '../seo/faq.js';
 import { href } from '../lib/base.js';
+import { RelatedPages } from './SeoLanding.js';
 
 /* Presentational landing pieces shared by the live app and the pre-rendered SEO landing page. */
 
@@ -118,5 +119,46 @@ export function SiteFooter() {
         Safety
       </a>
     </footer>
+  );
+}
+
+export function MoreAboutStrangerChat() {
+  return (
+    <section className="start-grid" aria-labelledby="more-title">
+      <article className="card prose-card">
+        <h2 id="more-title">Stranger chat and stranger talk, without the baggage</h2>
+        <p>
+          STRANGER is built for one thing: a quick, anonymous conversation with a random person.
+          Whether you call it stranger chat, stranger talk or simply talking to strangers online,
+          the idea is the same, and this site keeps it simple. There is nothing to install, no
+          account to create and no history to manage.
+        </p>
+        <p>
+          Choose{' '}
+          <a href={href('/stranger-chat')} data-link>
+            text chat
+          </a>{' '}
+          for the fastest, most private way to talk, or{' '}
+          <a href={href('/random-video-chat')} data-link>
+            random video chat
+          </a>{' '}
+          to meet someone face to face. If you used Omegle before it closed, STRANGER is a{' '}
+          <a href={href('/omegle-alternative')} data-link>
+            safer Omegle alternative
+          </a>{' '}
+          with the same instant matching.
+        </p>
+        <p>
+          Every conversation is one to one. Add interests to meet people who like what you like,
+          press Next whenever you want someone new, and use Report and Block the moment something
+          feels off. Read the{' '}
+          <a href={href('/safety')} data-link>
+            safety guide
+          </a>{' '}
+          before you start if it is your first time talking to strangers.
+        </p>
+      </article>
+      <RelatedPages />
+    </section>
   );
 }

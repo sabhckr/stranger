@@ -1031,3 +1031,52 @@ details.transcript ol {
   color: var(--text-muted);
   font-size: 15px;
 }
+
+/* ---------- SEO landing pages ---------- */
+.crumbs {
+  font-size: 13px;
+  color: var(--text-dim);
+  padding-top: 8px;
+}
+.crumbs a {
+  color: var(--text-muted);
+}
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 6px 0 24px;
+}
+.landing .hero {
+  padding-top: 18px;
+}
+.prose-card h2 {
+  font-size: 20px;
+  margin: 18px 0 8px;
+}
+.prose-card h2:first-child {
+  margin-top: 0;
+}
+.prose-card p,
+.prose-card li {
+  color: var(--text-muted);
+  font-size: 15.5px;
+}
+.prose-card ul {
+  padding-left: 20px;
+}
+.related h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+.related ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.related a {
+  color: var(--accent-2);
+}

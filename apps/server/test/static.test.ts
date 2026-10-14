@@ -21,6 +21,11 @@ describe('static web app serving (STATIC_DIR)', () => {
     );
     fs.writeFileSync(path.join(dir, 'assets', 'app.js'), 'console.log(1)');
     fs.writeFileSync(path.join(dir, 'robots.txt'), 'User-agent: *\n');
+    fs.mkdirSync(path.join(dir, 'stranger-talk'));
+    fs.writeFileSync(
+      path.join(dir, 'stranger-talk', 'index.html'),
+      '<!doctype html><title>Stranger Talk</title><div id="root">prerendered</div>',
+    );
     app = await startTestApp({ STATIC_DIR: dir, NODE_ID: 'static-node' });
     base = `http://127.0.0.1:${app.port}`;
   });
@@ -40,6 +45,23 @@ describe('static web app serving (STATIC_DIR)', () => {
     const csp = (await fetch(`${base}/`)).headers.get('content-security-policy') ?? '';
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain('mediastream:');
+  });
+
+  it('serves pre-rendered nested pages and picks up rebuilt files without a restart', async () => {
+    const res = await fetch(`${base}/stranger-talk`);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain('<title>Stranger Talk</title>');
+    expect(await (await fetch(`${base}/stranger-talk/`)).text()).toContain('prerendered');
+    expect(await (await fetch(`${base}/unknown-route`)).text()).toContain(
+      '<title>STRANGER</title>',
+    );
+    fs.writeFileSync(
+      path.join(dir, 'index.html'),
+      '<!doctype html><title>STRANGER v2</title><div id="root"></div>',
+    );
+    const future = Date.now() / 1000 + 5;
+    fs.utimesSync(path.join(dir, 'index.html'), future, future);
+    expect(await (await fetch(`${base}/unknown-route`)).text()).toContain('STRANGER v2');
   });
 
   it('serves hashed assets as immutable and plain files normally', async () => {

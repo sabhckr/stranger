@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { BASE, href } from './lib/base.js';
+import { seoPageFor } from './seo/pages.js';
 
-export type Route = 'home' | 'chat' | 'admin' | 'terms' | 'privacy' | 'safety' | 'not-found';
+export type Route =
+  'home' | 'chat' | 'admin' | 'terms' | 'privacy' | 'safety' | 'not-found' | `landing:${string}`;
 
 export function routeFor(pathname: string, base: string = BASE): Route {
   let path = pathname;
   if (base && (path === base || path.startsWith(`${base}/`))) path = path.slice(base.length);
-  switch (path.replace(/\/+$/, '') || '/') {
+  const clean = path.replace(/\/+$/, '') || '/';
+  const landing = seoPageFor(clean);
+  if (landing) return `landing:${landing.slug}`;
+  switch (clean) {
     case '/':
       return 'home';
     case '/chat':
@@ -46,7 +51,7 @@ function onDocumentClick(e: MouseEvent): void {
   const path = url.pathname.startsWith(BASE)
     ? url.pathname.slice(BASE.length) || '/'
     : url.pathname;
-  navigate(path);
+  navigate(path + url.search + url.hash);
 }
 
 export function useRoute(): Route {

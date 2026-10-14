@@ -15,7 +15,22 @@ export async function registerStatic(app: FastifyInstance, dir: string): Promise
       `STATIC_DIR ${root} has no index.html — build the web app first (npm run build)`,
     );
   }
-  const index = fs.readFileSync(indexPath);
+  // Pre-rendered pages live at <route>/index.html; read on demand (cached by mtime) so a rebuild
+  // of the web app is picked up without restarting the server.
+  const cache = new Map<string, { mtimeMs: number; body: Buffer }>();
+  const readCached = (file: string): Buffer | null => {
+    let stat: fs.Stats;
+    try {
+      stat = fs.statSync(file);
+    } catch {
+      return null;
+    }
+    const hit = cache.get(file);
+    if (hit && hit.mtimeMs === stat.mtimeMs) return hit.body;
+    const body = fs.readFileSync(file);
+    cache.set(file, { mtimeMs: stat.mtimeMs, body });
+    return body;
+  };
 
   await app.register(fastifyStatic, {
     root,
@@ -34,7 +49,11 @@ export async function registerStatic(app: FastifyInstance, dir: string): Promise
     if ((req.method !== 'GET' && req.method !== 'HEAD') || isApi || path.extname(url)) {
       return reply.code(404).send({ error: 'not_found' });
     }
-    return reply.header('cache-control', 'no-cache').type('text/html; charset=utf-8').send(index);
+    const safe = path.posix.normalize(url); // starts with '/', '..' cannot escape the root
+    const nested = path.join(root, safe, 'index.html');
+    const body =
+      (nested.startsWith(root + path.sep) ? readCached(nested) : null) ?? readCached(indexPath);
+    return reply.header('cache-control', 'no-cache').type('text/html; charset=utf-8').send(body);
   });
   return root;
 }

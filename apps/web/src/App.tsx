@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import type { ChatMode } from '@stranger/protocol';
 import { useChat } from './hooks/useChat.js';
 import { getConsent } from './lib/identity.js';
@@ -8,7 +8,12 @@ import { navigate, useRoute } from './router.js';
 import { ConsentGate } from './components/ConsentGate.js';
 import { Home } from './components/Home.js';
 import { ChatScreen } from './components/ChatScreen.js';
-import { AdminPage } from './components/AdminPage.js';
+const AdminPage = lazy(() =>
+  import('./components/AdminPage.js').then((m) => ({ default: m.AdminPage })),
+);
+import { SeoLanding } from './components/SeoLanding.js';
+import { applyHead } from './seo/head.js';
+import { SEO_PAGES } from './seo/pages.js';
 import { BannedScreen } from './components/BannedScreen.js';
 import { PrivacyPage, SafetyPage, TermsPage } from './components/LegalPages.js';
 import { Toasts } from './components/Toasts.js';
@@ -37,28 +42,9 @@ export function App() {
     navigate('/');
   }, [actions, localStream]);
 
-  // Per-route document titles; chat and admin are kept out of search indexes.
+  // Per-route title, description, canonical, Open Graph and robots.
   useEffect(() => {
-    const titles: Record<string, string> = {
-      home: 'Stranger Chat – Talk to Strangers Online Free | STRANGER',
-      chat: 'Chat – STRANGER',
-      admin: 'Moderation – STRANGER',
-      terms: 'Terms of Service – STRANGER',
-      privacy: 'Privacy Policy – STRANGER',
-      safety: 'Safety – STRANGER',
-      'not-found': 'Page not found – STRANGER',
-    };
-    document.title = titles[route] ?? 'STRANGER';
-    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
-    if (!robots) {
-      robots = document.createElement('meta');
-      robots.name = 'robots';
-      document.head.appendChild(robots);
-    }
-    robots.content =
-      route === 'chat' || route === 'admin' || route === 'not-found'
-        ? 'noindex, nofollow'
-        : 'index, follow, max-image-preview:large';
+    applyHead(route);
   }, [route]);
 
   // Landing on /chat without an active session (refresh, deep link) goes home.
@@ -84,7 +70,11 @@ export function App() {
       ) : null;
       break;
     case 'admin':
-      page = <AdminPage />;
+      page = (
+        <Suspense fallback={<div className="center-page">Loading…</div>}>
+          <AdminPage />
+        </Suspense>
+      );
       break;
     case 'terms':
       page = <TermsPage />;
@@ -107,7 +97,20 @@ export function App() {
         </div>
       );
       break;
-    default:
+    default: {
+      const landing = route.startsWith('landing:')
+        ? SEO_PAGES.find((p) => p.slug === route.slice('landing:'.length))
+        : undefined;
+      if (landing) {
+        page = (
+          <SeoLanding
+            page={landing}
+            onlineCount={state.onlineCount}
+            connection={state.connection}
+          />
+        );
+        break;
+      }
       page = (
         <Home
           onlineCount={state.onlineCount}
@@ -117,6 +120,7 @@ export function App() {
           onStart={onStart}
         />
       );
+    }
   }
 
   const needsGate = !consented && (route === 'home' || route === 'chat');

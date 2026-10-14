@@ -3,7 +3,14 @@ import type { ChatMode } from '@stranger/protocol';
 import { Logo } from './Logo.js';
 import { OnlinePill } from './OnlinePill.js';
 import { InterestsInput } from './InterestsInput.js';
-import { Faq, FeatureCards, HeroCopy, HouseRules, SiteFooter } from './landing-content.js';
+import {
+  Faq,
+  FeatureCards,
+  HeroCopy,
+  HouseRules,
+  MoreAboutStrangerChat,
+  SiteFooter,
+} from './landing-content.js';
 import { MediaError, requestCameraAndMic } from '../lib/media.js';
 
 export interface HomeProps {
@@ -22,7 +29,11 @@ export function Home({
   backendMissing = false,
   onStart,
 }: HomeProps) {
-  const [mode, setMode] = useState<ChatMode>('text');
+  const [mode, setMode] = useState<ChatMode>(() =>
+    new URLSearchParams(window.location.search).get('mode') === 'video' && videoAvailable
+      ? 'video'
+      : 'text',
+  );
   const [interests, setInterests] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -138,6 +149,7 @@ export function Home({
           </div>
 
           <FeatureCards />
+          <MoreAboutStrangerChat />
           <Faq />
         </main>
         <SiteFooter />

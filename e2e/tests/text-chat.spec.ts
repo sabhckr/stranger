@@ -123,4 +123,25 @@ test.describe('text chat', () => {
     await expect(page.locator('main')).toBeVisible();
     await context.close();
   });
+
+  test('keyword landing pages render with their own title and lead back to the start page', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto('/stranger-talk');
+    await expect(page).toHaveTitle(/Stranger Talk/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Stranger talk');
+    await expect(page.locator('link[rel=canonical]')).toHaveAttribute(
+      'href',
+      'http://localhost:5173/stranger-talk',
+    );
+    await page.getByRole('link', { name: 'Omegle alternative' }).click();
+    await expect(page).toHaveURL(/\/omegle-alternative$/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Omegle alternative');
+    await page.getByRole('link', { name: 'Start video chat' }).click();
+    await expect(page).toHaveURL(/\/\?mode=video$/);
+    await expect(page.getByRole('dialog', { name: /before you start/i })).toBeVisible();
+    await context.close();
+  });
 });
