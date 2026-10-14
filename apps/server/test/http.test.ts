@@ -16,6 +16,7 @@ describe('HTTP API', () => {
     base = `http://127.0.0.1:${app.port}`;
   });
   afterAll(async () => {
+    await resetState(app.redis, app.pool); // the rate-limit test leaves 429 counters behind
     await app.stop();
   });
   beforeEach(async () => {

@@ -32,7 +32,7 @@ jobs:
       - name: Build web app for Pages
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
-          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io
           VITE_API_BASE: ${{ vars.API_BASE }}
           VITE_WS_URL: ${{ vars.WS_URL }}
         run: npm run build:protocol && npm run build -w apps/web

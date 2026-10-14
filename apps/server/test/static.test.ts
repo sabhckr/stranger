@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { App } from '../src/app.js';
-import { startTestApp } from './helpers.js';
+import { resetState, startTestApp } from './helpers.js';
 import { loadConfig } from '../src/config.js';
 import { baseTestEnv } from './env.js';
 
@@ -28,6 +28,7 @@ describe('static web app serving (STATIC_DIR)', () => {
     );
     app = await startTestApp({ STATIC_DIR: dir, NODE_ID: 'static-node' });
     base = `http://127.0.0.1:${app.port}`;
+    await resetState(app.redis, app.pool); // clears rate-limit counters left by other test files
   });
   afterAll(async () => {
     await app.stop();
