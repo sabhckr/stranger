@@ -87,8 +87,11 @@ function setMeta(selector: string, attr: 'content' | 'href', value: string): voi
 /** Runtime head updates for client-side navigation. Pre-rendered pages ship the same values. */
 export function applyHead(route: string): void {
   const head = headFor(route);
-  const origin = window.location.origin;
-  const canonical = canonicalFor(`${origin}${BASE}`, head.path);
+  const override = (import.meta.env.VITE_CANONICAL_ROOT ?? '').trim();
+  const siteRoot = override
+    ? `${override.replace(/\/$/, '')}/`
+    : `${window.location.origin}${BASE}`;
+  const canonical = canonicalFor(siteRoot, head.path);
   document.title = head.title;
   setMeta('meta[name="description"]', 'content', head.description);
   setMeta('link[rel="canonical"]', 'href', canonical);

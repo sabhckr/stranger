@@ -1,5 +1,7 @@
 # STRANGER
 
+[![CI](https://github.com/sabhckr/stranger/actions/workflows/ci.yml/badge.svg)](https://github.com/sabhckr/stranger/actions/workflows/ci.yml) [![Pages](https://github.com/sabhckr/stranger/actions/workflows/pages.yml/badge.svg)](https://sabhckr.github.io/stranger/)
+
 Anonymous one-to-one **text and video chat** with random strangers, inspired by Omegle and built for
 2026 expectations: interest-based matching, instant Next/Stop, report/block/ban moderation, spam
 controls, an adults-only gate, a privacy-first data model (no chat content is ever stored) and a
@@ -50,11 +52,11 @@ docs            ARCHITECTURE, PLAN, SETUP, DEPLOYMENT, PROTOCOL, SAFETY, EXTERNA
 
 ## Live
 
-| What | URL |
-|---|---|
-| Full app on Render (site + API + WebSocket) | https://stranger-3ak5.onrender.com |
+| What                                                              | URL                                 |
+| ----------------------------------------------------------------- | ----------------------------------- |
+| Full app on Render (site + API + WebSocket)                       | https://stranger-3ak5.onrender.com  |
 | SEO landing on GitHub Pages (chat connects to the Render backend) | https://sabhckr.github.io/stranger/ |
-| Source | https://github.com/sabhckr/stranger |
+| Source                                                            | https://github.com/sabhckr/stranger |
 
 Render's free tier sleeps after 15 minutes without traffic (first request then takes up to a minute) and its free
 Postgres expires 30 days after creation; see docs/DEPLOYMENT.md before relying on it.

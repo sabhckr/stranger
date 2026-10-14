@@ -37,6 +37,10 @@ services:
           property: connectionString
       # Lets the GitHub Pages copy of the client talk to this API/WebSocket (the service's own
       # origin is added automatically from RENDER_EXTERNAL_URL).
+      # Search engines should treat the always-on GitHub Pages copy as the primary site; this copy
+      # declares it as canonical (used at build time by Vite and at runtime by the router).
+      - key: VITE_CANONICAL_ROOT
+        value: https://sabhckr.github.io/stranger/
       - key: PUBLIC_ORIGINS
         value: https://sabhckr.github.io
       - key: STUN_URLS

@@ -53,3 +53,13 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Submit URLs to IndexNow (Bing, Yandex, Seznam, Naver)
+        env:
+          SITE: ${{ steps.deployment.outputs.page_url }}
+          KEY: f2d916705548f465685500a2ff638633
+        run: |
+          ROOT="${SITE%/}/"
+          URLS=$(curl -fsS "${ROOT}sitemap.xml" | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g' | jq -R . | jq -s .)
+          HOST=$(echo "$ROOT" | sed -E 's#https?://([^/]+).*#\1#')
+          BODY=$(jq -n --arg host "$HOST" --arg key "$KEY" --arg loc "${ROOT}${KEY}.txt" --argjson urls "$URLS" '{host:$host,key:$key,keyLocation:$loc,urlList:$urls}')
+          curl -sS -o /dev/null -w "IndexNow HTTP %{http_code}\n" -H 'Content-Type: application/json; charset=utf-8' -d "$BODY" https://api.indexnow.org/indexnow

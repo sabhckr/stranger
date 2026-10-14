@@ -18,7 +18,10 @@ import { canonicalFor, headFor, jsonLdForHome, jsonLdForPage } from '../src/seo/
 const dist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
 const base = process.env.VITE_BASE ?? '/';
 const siteUrl = (process.env.VITE_SITE_URL ?? 'http://localhost:5173').replace(/\/$/, '');
-const siteRoot = `${siteUrl}${base.endsWith('/') ? base : `${base}/`}`;
+const canonicalOverride = (process.env.VITE_CANONICAL_ROOT ?? '').trim();
+const siteRoot = canonicalOverride
+  ? `${canonicalOverride.replace(/\/$/, '')}/`
+  : `${siteUrl}${base.endsWith('/') ? base : `${base}/`}`;
 
 const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 const marker = '<div id="root"></div>';

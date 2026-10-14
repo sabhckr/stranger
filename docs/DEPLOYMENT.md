@@ -45,7 +45,12 @@ your own domain or the Render deployment above.
   `apps/web/src/seo/faq.ts`, which is the same FAQ shown on the landing page.
 - `npm run build -w apps/web` pre-renders the landing page into `dist/index.html` (and `404.html` for Pages),
   and writes `robots.txt` (disallows `/chat` and `/admin`) and `sitemap.xml` for `VITE_SITE_URL`.
-- Set `VITE_SITE_URL` to the final public URL (and `VITE_BASE` when hosted under a sub-path) at build time;
+- Set `VITE_SITE_URL` to the final public origin (and `VITE_BASE` when hosted under a sub-path) at build time. When
+  the same site is served from two places, build the secondary copy with `VITE_CANONICAL_ROOT=<primary root>` so
+  every page declares the primary copy as canonical (the Render build does this for the GitHub Pages site).
+- After each Pages deploy the workflow submits the sitemap URLs to IndexNow (Bing, Yandex and partners); Google
+  only accepts sitemaps through Search Console, which remains a manual step.
+- `keepalive.yml` pings the Render instance every 10 minutes so the free tier does not sleep;
   `/chat`, `/admin` and 404 pages set `noindex` at runtime.
 - After launch: verify the domain in Google Search Console and Bing Webmaster Tools and submit
   `sitemap.xml`; keep one canonical origin (custom domain) rather than two live copies.

@@ -2,7 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import type { ChatMode } from '@stranger/protocol';
 import { useChat } from './hooks/useChat.js';
 import { getConsent } from './lib/identity.js';
-import { backendMissing } from './lib/config.js';
+import { backendMissing, warmBackend } from './lib/config.js';
 import { stopStream } from './lib/media.js';
 import { navigate, useRoute } from './router.js';
 import { ConsentGate } from './components/ConsentGate.js';
@@ -41,6 +41,11 @@ export function App() {
     actions.reset();
     navigate('/');
   }, [actions, localStream]);
+
+  // Wake a sleeping backend while the visitor reads the landing page.
+  useEffect(() => {
+    warmBackend();
+  }, []);
 
   // Per-route title, description, canonical, Open Graph and robots.
   useEffect(() => {

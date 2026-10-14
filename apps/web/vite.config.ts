@@ -6,8 +6,13 @@ import { jsonLdForHome } from './src/seo/head.ts';
 const serverTarget = process.env.VITE_DEV_SERVER_TARGET ?? 'http://localhost:8080';
 const base = process.env.VITE_BASE ?? '/';
 const siteUrl = (process.env.VITE_SITE_URL ?? 'http://localhost:5173').replace(/\/$/, '');
-/** Canonical URL of the landing page, always ending with "/". */
-const canonical = `${siteUrl}${base.endsWith('/') ? base : `${base}/`}`;
+/**
+ * Canonical URL of the landing page, always ending with "/". VITE_CANONICAL_ROOT lets a secondary
+ * deployment (e.g. the full app on Render) point search engines at the primary copy of the site.
+ */
+const canonical = (process.env.VITE_CANONICAL_ROOT ?? '').trim()
+  ? `${process.env.VITE_CANONICAL_ROOT!.trim().replace(/\/$/, '')}/`
+  : `${siteUrl}${base.endsWith('/') ? base : `${base}/`}`;
 
 /** Fills canonical/OG URLs and injects structured data into index.html (dev and build). */
 function seoHtml(): Plugin {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ChatMode } from '@stranger/protocol';
 import { Logo } from './Logo.js';
 import { OnlinePill } from './OnlinePill.js';
@@ -38,6 +38,14 @@ export function Home({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const canStart = connection === 'open' && !busy;
+  // Free hosting sleeps when idle; after a few seconds of connecting, tell the visitor why it takes a moment.
+  const [slowTimerFired, setSlowTimerFired] = useState(false);
+  useEffect(() => {
+    if (connection === 'open' || backendMissing) return;
+    const t = setTimeout(() => setSlowTimerFired(true), 5000);
+    return () => clearTimeout(t);
+  }, [connection, backendMissing]);
+  const slowConnect = slowTimerFired && connection !== 'open' && !backendMissing;
 
   const start = async () => {
     setError(null);
@@ -141,7 +149,9 @@ export function Home({
                     ? 'You can leave at any time.'
                     : backendMissing
                       ? 'Chat server not connected.'
-                      : 'Connecting to the server…'}
+                      : slowConnect
+                        ? 'Waking up the chat server. On free hosting this can take up to a minute…'
+                        : 'Connecting to the server…'}
                 </span>
               </div>
             </section>

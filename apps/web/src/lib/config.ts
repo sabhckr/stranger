@@ -15,3 +15,13 @@ export function backendMissing(): boolean {
   if (import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_BASE) return false;
   return /\.github\.io$/i.test(window.location.hostname);
 }
+
+/** Nudge a sleeping free-tier backend awake as soon as the page loads (fire and forget). */
+export function warmBackend(): void {
+  if (!API_BASE) return;
+  try {
+    void fetch(`${API_BASE}/healthz`, { mode: 'cors', cache: 'no-store' }).catch(() => undefined);
+  } catch {
+    /* ignore */
+  }
+}
