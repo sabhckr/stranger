@@ -29,8 +29,10 @@ phones, not for production. Camera access works because the URL is HTTPS. Stop w
 ### Keeping the test site up (macOS)
 
 `npm run tunnel:install` installs a per-user LaunchAgent (`com.stranger.tunnel`) that runs the tunnel at
-login, restarts it if it exits and keeps the Mac from idle-sleeping while it runs. The current URL is in
-`.tunnel-url` (`npm run tunnel:url`); it changes after every restart. Logs: `~/Library/Logs/stranger-tunnel.log`.
+login, restarts it if it exits and keeps the Mac from idle-sleeping while it runs. Because macOS blocks
+background jobs from reading `~/Documents`, the agent runs from a deploy copy of the _committed_ repository
+at `~/.stranger-live` (re-run the install after new commits to update it). The current URL is printed by
+`npm run tunnel:url`; it changes after every restart. Logs: `~/Library/Logs/stranger-tunnel.log`.
 Remove with `npm run tunnel:uninstall`. Redis and Postgres should run as Homebrew services
 (`brew services start redis postgresql@17`) so they come back after a reboot. A closed lid still sleeps the
 Mac unless it is on power with an external display; for a permanent address use a named Cloudflare tunnel on
