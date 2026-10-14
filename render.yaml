@@ -10,7 +10,7 @@ services:
     buildCommand: npm ci --no-audit --no-fund && npm run build
     startCommand: node apps/server/dist/db/migrate.js && node apps/server/dist/index.js
     healthCheckPath: /healthz
-    autoDeploy: true
+    autoDeployTrigger: commit
     envVars:
       - key: NODE_ENV
         value: production
