@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:create": "tsx src/db/create-database.ts",
-    "db:migrate": "tsx src/db/migrate.ts"
+    "db:migrate": "tsx src/db/migrate.ts",
+    "start:e2e": "tsx src/db/create-database.ts && tsx src/db/migrate.ts && tsx src/index.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.1",

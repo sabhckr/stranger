@@ -1,0 +1,90 @@
+# Production-shaped stack: Postgres, Redis, coturn, the Node server and nginx serving the SPA.
+# Copy ../.env.example to ../.env and fill in secrets first. Put TLS in front of `web` (docs/DEPLOYMENT.md).
+name: stranger
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: stranger
+      POSTGRES_USER: stranger
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U stranger -d stranger']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command:
+      [
+        'redis-server',
+        '--save',
+        '',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '256mb',
+        '--maxmemory-policy',
+        'allkeys-lru',
+      ]
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  coturn:
+    image: coturn/coturn:4.6
+    network_mode: host # TURN needs the real host ports (3478 + relay range)
+    command: >
+      -c /etc/coturn/turnserver.conf
+      --static-auth-secret=${TURN_SECRET:?set TURN_SECRET in .env}
+      --external-ip=${TURN_EXTERNAL_IP:?set TURN_EXTERNAL_IP (public IP) in .env}
+      --realm=${TURN_REALM:-stranger.local}
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+    restart: unless-stopped
+
+  migrate:
+    build: { context: .., dockerfile: infra/Dockerfile.server }
+    command: ['node', 'dist/db/migrate.js']
+    environment:
+      DATABASE_URL: postgres://stranger:${POSTGRES_PASSWORD}@postgres:5432/stranger
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  server:
+    build: { context: .., dockerfile: infra/Dockerfile.server }
+    env_file: ../.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8080
+      TRUST_PROXY: 'true'
+      DATABASE_URL: postgres://stranger:${POSTGRES_PASSWORD}@postgres:5432/stranger
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    deploy:
+      replicas: 1 # scale horizontally: matchmaking and relay are Redis-backed
+    restart: unless-stopped
+
+  web:
+    build: { context: .., dockerfile: infra/Dockerfile.web }
+    environment:
+      SERVER_UPSTREAM: server:8080
+    ports:
+      - '${WEB_PORT:-8088}:80'
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  pgdata:

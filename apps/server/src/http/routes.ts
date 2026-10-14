@@ -188,12 +188,10 @@ export async function registerRoutes(app: FastifyInstance, deps: RouteDeps): Pro
 
   app.setErrorHandler((err, _req, reply) => {
     if (err instanceof z.ZodError) {
-      reply
-        .code(400)
-        .send({
-          error: 'bad_request',
-          issues: err.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
-        });
+      reply.code(400).send({
+        error: 'bad_request',
+        issues: err.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
+      });
       return;
     }
     const status = (err as { statusCode?: number }).statusCode ?? 500;

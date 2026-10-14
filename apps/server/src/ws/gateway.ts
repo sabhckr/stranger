@@ -75,7 +75,7 @@ export interface GatewayDeps {
 }
 
 const MAX_PAYLOAD_BYTES = 128 * 1024;
-const PRESENCE_BROADCAST_MS = 10_000;
+const PRESENCE_BROADCAST_MS = 5_000;
 
 export class Gateway {
   readonly sessions = new Map<string, Session>();
