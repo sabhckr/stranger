@@ -48,6 +48,13 @@ infra           Dockerfiles, docker-compose, nginx, coturn
 docs            ARCHITECTURE, PLAN, SETUP, DEPLOYMENT, PROTOCOL, SAFETY, EXTERNAL-SERVICES
 ```
 
+## Hosting
+
+- **GitHub Pages** (static landing + client): `.github/workflows/pages.yml`, published on every push to `main`.
+- **Render** (API + WebSocket + SPA, Postgres, Redis): `render.yaml` blueprint, one click from the GitHub repo.
+- **Docker / VPS**: `infra/` (compose with coturn + nginx) or `STATIC_DIR=apps/web/dist` to serve everything
+  from the Node process. Details and the SEO setup in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ## Status
 
 See [docs/PLAN.md](docs/PLAN.md) for the phase-by-phase checklist and

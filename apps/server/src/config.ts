@@ -85,6 +85,12 @@ export const EnvSchema = z
     REPORT_AUTOBAN_WINDOW_HOURS: int(24, 1, 24 * 365),
     AUTOBAN_DURATION_HOURS: int(24, 1, 24 * 365),
     REPORT_RETENTION_DAYS: int(90, 1, 3650),
+    /** Serve the built web app from this directory (single-service deployments). */
+    STATIC_DIR: optionalString,
+    /** Public site URL (e.g. https://stranger.example); added to PUBLIC_ORIGINS. */
+    SITE_URL: optionalString,
+    /** Injected by Render.com; used as the public origin when PUBLIC_ORIGINS is not set. */
+    RENDER_EXTERNAL_URL: optionalString,
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === 'production') {
@@ -95,11 +101,11 @@ export const EnvSchema = z
           message: 'IDENTITY_SECRET must be a real secret of 32+ characters in production',
         });
       }
-      if (env.PUBLIC_ORIGINS.length === 0) {
+      if (env.PUBLIC_ORIGINS.length === 0 && !env.SITE_URL && !env.RENDER_EXTERNAL_URL) {
         ctx.addIssue({
           code: 'custom',
           path: ['PUBLIC_ORIGINS'],
-          message: 'PUBLIC_ORIGINS must list the site origin(s) in production',
+          message: 'PUBLIC_ORIGINS (or SITE_URL) must list the site origin(s) in production',
         });
       }
     }
@@ -125,6 +131,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     throw new Error(`Invalid configuration:\n${lines.join('\n')}`);
   }
   const data = parsed.data;
+  for (const extra of [data.SITE_URL, data.RENDER_EXTERNAL_URL]) {
+    if (!extra) continue;
+    const origin = new URL(extra).origin;
+    if (!data.PUBLIC_ORIGINS.includes(origin)) data.PUBLIC_ORIGINS.push(origin);
+  }
   if (data.PUBLIC_ORIGINS.length === 0) {
     data.PUBLIC_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
   }

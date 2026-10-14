@@ -1,5 +1,36 @@
 # Deployment
 
+## Fastest path: GitHub + Render (free tiers)
+
+1. **Push to GitHub.** `.github/workflows/pages.yml` publishes the static site to GitHub Pages on every push
+   to `main` (enable Pages → Source: _GitHub Actions_ once). Pages hosts only the landing page and the client:
+   until a backend is connected it shows a "chat server not connected" notice.
+2. **Deploy the backend from the same repo on Render.** In Render choose _New → Blueprint_ and select the
+   repository: `render.yaml` creates the web service (API + WebSocket + the built SPA on one origin), a
+   Postgres database and a Redis (Key Value) instance, generates `IDENTITY_SECRET`/`ADMIN_TOKEN` and runs
+   migrations on each deploy. The site is then fully working at `https://<service>.onrender.com`.
+3. **Point the Pages site at it (optional).** Add repository variables `API_BASE=https://<service>.onrender.com`
+   and `WS_URL=wss://<service>.onrender.com/ws`, add `https://<owner>.github.io` to `PUBLIC_ORIGINS` on Render
+   (or set `SITE_URL`), and re-run the Pages workflow. Or simply use the Render URL as the public site and
+   put a custom domain on it (better for SEO: one canonical origin).
+4. **Add TURN** (`TURN_URLS` + `TURN_SECRET`, see docs/EXTERNAL-SERVICES.md) so video works behind strict NATs.
+
+Notes on free tiers: Render free web services sleep after inactivity (first request takes ~30 s) and the free
+Postgres is time-limited; upgrade before launch. Blueprint field names follow Render's current spec but were
+not applied from this machine (no Render account here), so review the first deploy in the Render dashboard.
+
+## SEO
+
+- `index.html` carries the title/description targeting "stranger chat", "stranger talk", "talk to strangers",
+  canonical and Open Graph/Twitter tags, and JSON-LD (`WebSite`, `WebApplication`, `FAQPage`) generated from
+  `apps/web/src/seo/faq.ts`, which is the same FAQ shown on the landing page.
+- `npm run build -w apps/web` pre-renders the landing page into `dist/index.html` (and `404.html` for Pages),
+  and writes `robots.txt` (disallows `/chat` and `/admin`) and `sitemap.xml` for `VITE_SITE_URL`.
+- Set `VITE_SITE_URL` to the final public URL (and `VITE_BASE` when hosted under a sub-path) at build time;
+  `/chat`, `/admin` and 404 pages set `noindex` at runtime.
+- After launch: verify the domain in Google Search Console and Bing Webmaster Tools and submit
+  `sitemap.xml`; keep one canonical origin (custom domain) rather than two live copies.
+
 ## Reference stack (docker compose)
 
 `infra/docker-compose.yml` runs Postgres, Redis, coturn, the migration job, the server and nginx (SPA +

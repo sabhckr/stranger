@@ -1,5 +1,5 @@
 import { Logo } from './Logo.js';
-import { navigate } from '../router.js';
+import { href } from '../lib/base.js';
 
 const NOTICE = (
   <div className="alert alert-warn" role="note">
@@ -14,14 +14,7 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
       <div className="container">
         <header className="site-header">
           <Logo />
-          <a
-            href="/"
-            className="btn btn-ghost"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate('/');
-            }}
-          >
+          <a href={href('/')} className="btn btn-ghost" data-link>
             Back
           </a>
         </header>

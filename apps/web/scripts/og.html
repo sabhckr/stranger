@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        font-family: -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+        color: #e9ebf1;
+        background:
+          radial-gradient(900px 500px at 8% -10%, rgba(143, 130, 255, 0.28), transparent 60%),
+          radial-gradient(700px 420px at 100% 0%, rgba(79, 209, 161, 0.18), transparent 55%),
+          #0b0d12;
+      }
+      .wrap {
+        padding: 76px 88px;
+        display: flex;
+        flex-direction: column;
+        height: 630px;
+        box-sizing: border-box;
+      }
+      .mark {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        font-size: 26px;
+      }
+      .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #8f82ff, #4fd1a1);
+        box-shadow: 0 0 28px rgba(143, 130, 255, 0.8);
+      }
+      h1 {
+        margin: 54px 0 18px;
+        font-size: 84px;
+        line-height: 1.02;
+        letter-spacing: -0.025em;
+        font-weight: 800;
+      }
+      h1 em {
+        font-style: normal;
+        background: linear-gradient(90deg, #b3a9ff, #4fd1a1);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      p {
+        margin: 0;
+        font-size: 30px;
+        color: #a3abbd;
+        line-height: 1.35;
+      }
+      .pills {
+        margin-top: auto;
+        display: flex;
+        gap: 14px;
+      }
+      .pill {
+        padding: 12px 22px;
+        border-radius: 999px;
+        border: 1px solid #3b4252;
+        background: rgba(20, 23, 31, 0.9);
+        font-size: 22px;
+        color: #c9cfdd;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="mark"><span class="dot"></span>STRANGER</div>
+      <h1>Stranger chat.<br />Talk to <em>someone new</em>.</h1>
+      <p>Free anonymous stranger talk by text or video. Match by interests, skip anytime.</p>
+      <div class="pills">
+        <span class="pill">No sign-up</span><span class="pill">Text &amp; video</span
+        ><span class="pill">Nothing stored</span><span class="pill">18+</span>
+      </div>
+    </div>
+  </body>
+</html>

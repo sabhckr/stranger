@@ -17,6 +17,7 @@ import { ReportService } from './safety/reports.js';
 import { ModerationService } from './safety/moderation.js';
 import { Gateway } from './ws/gateway.js';
 import { registerRoutes } from './http/routes.js';
+import { registerStatic } from './http/static.js';
 
 export interface App {
   fastify: FastifyInstance;
@@ -89,8 +90,27 @@ export async function buildApp(config: Config, log: Logger): Promise<App> {
     disableRequestLogging: config.isProduction,
     bodyLimit: 64 * 1024,
   });
+  // The API alone needs no CSP; when it also serves the SPA it applies the same policy as infra/nginx.
+  const contentSecurityPolicy = config.STATIC_DIR
+    ? {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'blob:'],
+          mediaSrc: ["'self'", 'blob:', 'mediastream:'],
+          connectSrc: ["'self'", 'wss:', 'ws:'],
+          fontSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+          baseUri: ["'self'"],
+          formAction: ["'self'"],
+          upgradeInsecureRequests: null,
+        },
+      }
+    : false;
   await fastify.register(helmet, {
-    contentSecurityPolicy: false,
+    contentSecurityPolicy,
     crossOriginResourcePolicy: { policy: 'same-site' },
   });
   await fastify.register(cors, { origin: config.PUBLIC_ORIGINS, credentials: false });
@@ -105,6 +125,10 @@ export async function buildApp(config: Config, log: Logger): Promise<App> {
     reports,
     relay,
   });
+  if (config.STATIC_DIR) {
+    const root = await registerStatic(fastify, config.STATIC_DIR);
+    log.info({ root }, 'serving static web app');
+  }
 
   const app: App = {
     fastify,

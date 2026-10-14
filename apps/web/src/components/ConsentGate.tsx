@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { saveConsent } from '../lib/identity.js';
-import { navigate } from '../router.js';
+import { href } from '../lib/base.js';
 
 export function ConsentGate({ onAccept }: { onAccept: () => void }) {
   const [age, setAge] = useState(false);
@@ -41,33 +41,15 @@ export function ConsentGate({ onAccept }: { onAccept: () => void }) {
           <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
           <span>
             I agree to the{' '}
-            <a
-              href="/terms"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate('/terms');
-              }}
-            >
+            <a href={href('/terms')} data-link>
               Terms
             </a>{' '}
             and{' '}
-            <a
-              href="/privacy"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate('/privacy');
-              }}
-            >
+            <a href={href('/privacy')} data-link>
               Privacy Policy
             </a>
             , and I will follow the{' '}
-            <a
-              href="/safety"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate('/safety');
-              }}
-            >
+            <a href={href('/safety')} data-link>
               safety rules
             </a>
             .<small>Harassment, nudity, hate and anything involving minors gets you banned.</small>

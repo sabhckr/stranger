@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ChatMode } from '@stranger/protocol';
 import { useChat } from './hooks/useChat.js';
 import { getConsent } from './lib/identity.js';
+import { backendMissing } from './lib/config.js';
 import { stopStream } from './lib/media.js';
 import { navigate, useRoute } from './router.js';
 import { ConsentGate } from './components/ConsentGate.js';
@@ -15,7 +16,8 @@ import { Toasts } from './components/Toasts.js';
 export function App() {
   const route = useRoute();
   const [consented, setConsented] = useState(() => getConsent() !== null);
-  const [state, actions] = useChat(consented);
+  const noBackend = backendMissing();
+  const [state, actions] = useChat(consented && !noBackend);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
   const onStart = useCallback(
@@ -34,6 +36,30 @@ export function App() {
     actions.reset();
     navigate('/');
   }, [actions, localStream]);
+
+  // Per-route document titles; chat and admin are kept out of search indexes.
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      home: 'Stranger Chat – Talk to Strangers Online Free | STRANGER',
+      chat: 'Chat – STRANGER',
+      admin: 'Moderation – STRANGER',
+      terms: 'Terms of Service – STRANGER',
+      privacy: 'Privacy Policy – STRANGER',
+      safety: 'Safety – STRANGER',
+      'not-found': 'Page not found – STRANGER',
+    };
+    document.title = titles[route] ?? 'STRANGER';
+    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.name = 'robots';
+      document.head.appendChild(robots);
+    }
+    robots.content =
+      route === 'chat' || route === 'admin' || route === 'not-found'
+        ? 'noindex, nofollow'
+        : 'index, follow, max-image-preview:large';
+  }, [route]);
 
   // Landing on /chat without an active session (refresh, deep link) goes home.
   useEffect(() => {
@@ -87,6 +113,7 @@ export function App() {
           onlineCount={state.onlineCount}
           connection={state.connection}
           videoAvailable={state.features.video}
+          backendMissing={noBackend}
           onStart={onStart}
         />
       );

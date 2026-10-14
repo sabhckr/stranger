@@ -1,18 +1,16 @@
-import { navigate } from '../router.js';
+import { href } from '../lib/base.js';
 
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <a
       className="wordmark"
-      href="/"
+      href={href('/')}
+      data-link
       aria-label="STRANGER home"
-      onClick={(e) => {
-        e.preventDefault();
-        navigate('/');
-      }}
+      data-compact={compact || undefined}
     >
       <span className="dot" aria-hidden="true" />
-      {compact ? 'STRANGER' : 'STRANGER'}
+      STRANGER
     </a>
   );
 }

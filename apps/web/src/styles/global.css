@@ -989,3 +989,45 @@ details.transcript ol {
   border-color: var(--accent);
   background: var(--accent-soft);
 }
+
+/* ---------- landing FAQ ---------- */
+.faq {
+  margin-bottom: 20px;
+}
+.faq h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.faq details {
+  border-top: 1px solid var(--border);
+  padding: 12px 0;
+}
+.faq details:last-child {
+  padding-bottom: 2px;
+}
+.faq summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary::after {
+  content: '+';
+  color: var(--accent-2);
+  font-weight: 700;
+  font-size: 18px;
+}
+.faq details[open] summary::after {
+  content: '−';
+}
+.faq p {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-size: 15px;
+}
