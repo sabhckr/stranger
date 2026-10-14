@@ -37,6 +37,8 @@ jobs:
           VITE_WS_URL: ${{ vars.WS_URL }}
         run: npm run build:protocol && npm run build -w apps/web
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist
