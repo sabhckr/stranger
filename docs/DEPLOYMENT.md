@@ -38,6 +38,17 @@ Remove with `npm run tunnel:uninstall`. Redis and Postgres should run as Homebre
 Mac unless it is on power with an external display; for a permanent address use a named Cloudflare tunnel on
 your own domain or the Render deployment above.
 
+## Zero-cost always-on setup
+
+1. **Database:** create a free Neon project (no expiry, 0.5 GB), copy its connection string, and set it as
+   `DATABASE_URL` on the Render web service (Environment tab). Redeploy; migrations run at start. Then delete
+   the Render free database. Keep the string secret; never paste it into chats or commits.
+2. **Backend:** keep the Render free web service; the `keepalive.yml` workflow (or a free UptimeRobot monitor
+   on `/healthz` every 5 minutes, which does not pause) prevents spin-down.
+3. **Video relay:** sign up for Metered's Open Relay free TURN, then set `TURN_URLS`, `TURN_USERNAME` and
+   `TURN_CREDENTIAL` on Render.
+4. **URLs:** `https://<user>.github.io/<repo>/` and `https://<service>.onrender.com` are permanent and free.
+
 ## SEO
 
 - `index.html` carries the title/description targeting "stranger chat", "stranger talk", "talk to strangers",
