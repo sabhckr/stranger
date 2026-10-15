@@ -1,5 +1,5 @@
-# Render.com Blueprint: one web service serving the SPA + API + WebSocket, with managed Postgres
-# and Redis (Key Value). In Render: New → Blueprint → pick this repository.
+# Render.com Blueprint: one web service serving the SPA + API + WebSocket, with Redis (Key Value)
+# and an operator-provided Postgres (DATABASE_URL). In Render: New → Blueprint → pick this repository.
 # Free plans spin down when idle and the free Postgres expires after a trial period; see
 # docs/DEPLOYMENT.md. TURN (needed for video behind strict NATs) is not provided here.
 services:
@@ -26,10 +26,11 @@ services:
         generateValue: true
       - key: ADMIN_TOKEN
         generateValue: true
+      # Operator-provided Postgres connection string (e.g. a free Neon project, which does not expire).
+      # Set it once in the Render dashboard (Environment tab); `sync: false` keeps Blueprint syncs from
+      # overwriting it. The original Blueprint-created `stranger-db` keeps running until you delete it.
       - key: DATABASE_URL
-        fromDatabase:
-          name: stranger-db
-          property: connectionString
+        sync: false
       - key: REDIS_URL
         fromService:
           type: keyvalue
@@ -59,8 +60,3 @@ services:
     name: stranger-redis
     plan: free
     ipAllowList: []
-databases:
-  - name: stranger-db
-    plan: free
-    databaseName: stranger
-    user: stranger
