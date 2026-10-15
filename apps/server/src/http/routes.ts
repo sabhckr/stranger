@@ -42,6 +42,14 @@ export function buildIceServers(config: Config): {
     });
     return { iceServers, turn: true, ttl: creds.ttl };
   }
+  if (config.turnEnabled && config.TURN_USERNAME && config.TURN_CREDENTIAL) {
+    iceServers.push({
+      urls: config.TURN_URLS,
+      username: config.TURN_USERNAME,
+      credential: config.TURN_CREDENTIAL,
+    });
+    return { iceServers, turn: true, ttl: 0 };
+  }
   return { iceServers, turn: false, ttl: 0 };
 }
 

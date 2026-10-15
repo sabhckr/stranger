@@ -72,6 +72,9 @@ export const EnvSchema = z
     STUN_URLS: list,
     TURN_URLS: list,
     TURN_SECRET: optionalString,
+    /** Static TURN credentials (e.g. Metered / Open Relay free tier) when no shared secret is used. */
+    TURN_USERNAME: optionalString,
+    TURN_CREDENTIAL: optionalString,
     TURN_TTL_SECONDS: int(600, 60, 86_400),
     MATCH_FALLBACK_MS: int(8000, 0, 600_000),
     MATCH_SWEEP_INTERVAL_MS: int(1000, 100, 60_000),
@@ -109,11 +112,12 @@ export const EnvSchema = z
         });
       }
     }
-    if (env.TURN_URLS.length > 0 && !env.TURN_SECRET) {
+    const hasStatic = Boolean(env.TURN_USERNAME && env.TURN_CREDENTIAL);
+    if (env.TURN_URLS.length > 0 && !env.TURN_SECRET && !hasStatic) {
       ctx.addIssue({
         code: 'custom',
         path: ['TURN_SECRET'],
-        message: 'TURN_SECRET is required when TURN_URLS is set',
+        message: 'TURN_URLS needs either TURN_SECRET or TURN_USERNAME + TURN_CREDENTIAL',
       });
     }
   });
@@ -144,6 +148,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     ...data,
     isProduction: data.NODE_ENV === 'production',
     isTest: data.NODE_ENV === 'test',
-    turnEnabled: data.TURN_URLS.length > 0 && Boolean(data.TURN_SECRET),
+    turnEnabled:
+      data.TURN_URLS.length > 0 &&
+      Boolean(data.TURN_SECRET || (data.TURN_USERNAME && data.TURN_CREDENTIAL)),
   };
 }

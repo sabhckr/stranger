@@ -2,6 +2,8 @@ import { createHmac } from 'node:crypto';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { App } from '../src/app.js';
 import { resetState, startTestApp } from './helpers.js';
+import { loadConfig } from '../src/config.js';
+import { baseTestEnv } from './env.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const json = (r: Response): Promise<any> => r.json() as Promise<any>;
@@ -63,6 +65,29 @@ describe('HTTP API', () => {
     } finally {
       await turnApp.stop();
     }
+  });
+
+  it('passes static TURN credentials through when no shared secret is configured', async () => {
+    const turnApp = await startTestApp({
+      TURN_URLS: 'turn:a.relay.metered.ca:80',
+      TURN_USERNAME: 'user1',
+      TURN_CREDENTIAL: 'pass1',
+      NODE_ID: 'turn-static',
+    });
+    try {
+      const body = await json(await fetch(`http://127.0.0.1:${turnApp.port}/api/ice`));
+      expect(body.turn).toBe(true);
+      expect(body.iceServers[1]).toEqual({
+        urls: ['turn:a.relay.metered.ca:80'],
+        username: 'user1',
+        credential: 'pass1',
+      });
+    } finally {
+      await turnApp.stop();
+    }
+    expect(() =>
+      loadConfig({ ...baseTestEnv, TURN_URLS: 'turn:x:3478', TURN_USERNAME: 'only-user' }),
+    ).toThrow(/TURN_SECRET/);
   });
 
   it('exposes public stats', async () => {
